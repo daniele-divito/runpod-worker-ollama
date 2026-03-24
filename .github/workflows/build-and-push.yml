@@ -27,6 +27,7 @@ jobs:
   build-push-docker-image:
     name: 🐳 Build and push Docker image
     runs-on: ubuntu-latest
+    environment: runpodenv
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
