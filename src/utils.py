@@ -4,3 +4,4 @@ class JobInput:
         self.stream = job.get("stream", False)
         self.openai_route = job.get("openai_route")
         self.openai_input = job.get("openai_input")
+        self.images = job.get("images", [])

@@ -23,22 +23,54 @@ class OllamaEngine:
 
         # Depending if prompt is a string or a list, we need to handle it differently and send it to the OpenAI API
         if isinstance(job_input.llm_input, str):
-            # Buid new JobInput object with the OpenAI route and input
-            openAiJob = JobInput({
-                "openai_route": "/v1/completions",
-                "openai_input": {
-                    "model": model,
-                    "prompt": job_input.llm_input,
-                    "stream": job_input.stream
-                }
-            })
+            if job_input.images:
+                # Images require chat completions with multimodal content
+                content = [{"type": "text", "text": job_input.llm_input}]
+                for image_b64 in job_input.images:
+                    content.append({
+                        "type": "image_url",
+                        "image_url": {"url": f"data:image/png;base64,{image_b64}"}
+                    })
+                openAiJob = JobInput({
+                    "openai_route": "/v1/chat/completions",
+                    "openai_input": {
+                        "model": model,
+                        "messages": [{"role": "user", "content": content}],
+                        "stream": job_input.stream
+                    }
+                })
+            else:
+                # Buid new JobInput object with the OpenAI route and input
+                openAiJob = JobInput({
+                    "openai_route": "/v1/completions",
+                    "openai_input": {
+                        "model": model,
+                        "prompt": job_input.llm_input,
+                        "stream": job_input.stream
+                    }
+                })
         else:
+            messages = job_input.llm_input
+            # If images are provided, append them to the last user message
+            if job_input.images:
+                messages = [msg.copy() for msg in messages]
+                for i in range(len(messages) - 1, -1, -1):
+                    if messages[i].get("role") == "user":
+                        text = messages[i].get("content", "")
+                        content = [{"type": "text", "text": text}] if isinstance(text, str) else text
+                        for image_b64 in job_input.images:
+                            content.append({
+                                "type": "image_url",
+                                "image_url": {"url": f"data:image/png;base64,{image_b64}"}
+                            })
+                        messages[i] = {**messages[i], "content": content}
+                        break
             # Buid new JobInput object with the OpenAI route and input
             openAiJob = JobInput({
                 "openai_route": "/v1/chat/completions",
                 "openai_input": {
                     "model": model,
-                    "messages": job_input.llm_input,
+                    "messages": messages,
                     "stream": job_input.stream
                 }
             })
