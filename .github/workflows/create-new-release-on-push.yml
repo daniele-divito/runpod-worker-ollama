@@ -22,7 +22,7 @@ jobs:
         id: custom_image_release
         uses: pozetroninc/github-action-get-latest-release@v0.8.0
         with:
-          repository: SvenBrnn/runpod-worker-ollama
+          repository: daniele-divito/runpod-worker-ollama
           excludes: prerelease,draft
 
       - name: 🆕 Get the latest ollama release
