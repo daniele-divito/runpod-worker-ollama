@@ -42,7 +42,7 @@ jobs:
           context: ./
           build-args: OLLAMA_VERSION=${{ inputs.ollama_version }}
           push: true
-          tags: daniele-divito/runpod-worker-ollama:${{ inputs.ollama_version }}${{ inputs.next_version_suffix }},daniele-divito/runpod-worker-ollama:latest
+          tags: danieledivitocode/runpod-worker-ollama:${{ inputs.ollama_version }}${{ inputs.next_version_suffix }},danieledivitocode/runpod-worker-ollama:latest
 
   create-release:
     name: 🏷️ Create GitHub Release
